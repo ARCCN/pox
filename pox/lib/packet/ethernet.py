@@ -1,4 +1,4 @@
-# Copyright 2011,2012,2013 James McCauley
+# Copyright 2011,2012,2013 James McCauley, 2013 Applied Research Center for Computer Networks
 # Copyright 2008 (C) Nicira, Inc.
 #
 # This file is part of POX.
