@@ -718,44 +718,37 @@ class Connection (EventMixin):
     self.buf += d
     buf_len = len(self.buf)
 
-
     offset = 0
     while buf_len - offset >= 8: # 8 bytes is minimum OF message size
       # We pull the first four bytes of the OpenFlow header off by hand
       # (using ord) to find the version/length/type so that we can
       # correctly call libopenflow to unpack it.
+      
+      # OpenFlow parsing occurs here:
+      if ord(self.buf[offset]) == of.OFP_VERSION:
+        ofp_type = ord(self.buf[offset+1])
+        msg_length = ord(self.buf[offset+2]) << 8 | ord(self.buf[offset+3])
+        if buf_len - offset < msg_length: break
+        
+        new_offset,msg = unpackers[ofp_type](self.buf, offset)
+        assert new_offset - offset == msg_length
+        offset = new_offset
 
-      ofp_type = ord(self.buf[offset+1])
-
-      if ord(self.buf[offset]) != of.OFP_VERSION:
-        if ofp_type == of.OFPT_HELLO:
-          # We let this through and hope the other side switches down.
-          pass
-        else:
-          log.warning("Bad OpenFlow version (0x%02x) on connection %s"
-                      % (ord(self.buf[offset]), self))
-          return False # Throw connection away
-
-      msg_length = ord(self.buf[offset+2]) << 8 | ord(self.buf[offset+3])
-
-      if buf_len - offset < msg_length: break
-
-      new_offset,msg = unpackers[ofp_type](self.buf, offset)
-      assert new_offset - offset == msg_length
-      offset = new_offset
-
-      try:
-        h = handlers[ofp_type]
-        h(self, msg)
-      except:
-        log.exception("%s: Exception while handling OpenFlow message:\n" +
-                      "%s %s", self,self,
-                      ("\n" + str(self) + " ").join(str(msg).split('\n')))
-        continue
+        try:
+          h = handlers[ofp_type]
+          h(self, msg)
+        except:
+          log.exception("%s: Exception while handling OpenFlow message:\n" +
+                        "%s %s", self,self,
+                        ("\n" + str(self) + " ").join(str(msg).split('\n')))
+          continue
+      else:
+        log.warning("Bad OpenFlow version (" + str(ord(self.buf[0])) +
+                    ") on connection " + str(self))
 
     if offset != 0:
       self.buf = self.buf[offset:]
-
+  
     return True
 
   def _incoming_stats_reply (self, ofp):
