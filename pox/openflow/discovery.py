@@ -114,7 +114,9 @@ class LLDPSender (object):
     if port_num > of.OFPP_MAX: return
     self.del_port(dpid, port_num, set_timer = False)
     self._next_cycle.append(LLDPSender.SendItem(dpid, port_num,
-          self.create_discovery_packet(dpid, port_num, port_addr)))
+          self.create_discovery_packet(dpid, port_num, port_addr, "LLDP")))
+    self._next_cycle.append(LLDPSender.SendItem(dpid, port_num,
+          self.create_discovery_packet(dpid, port_num, port_addr, "BDDP")))
     if set_timer: self._set_timer()
 
   def _set_timer (self):
@@ -141,10 +143,8 @@ class LLDPSender (object):
     self._next_cycle.append(item)
     core.openflow.sendToDPID(item.dpid, item.packet)
 
-  def create_discovery_packet (self, dpid, port_num, port_addr):
-    """
-    Build discovery packet
-    """
+  def create_discovery_packet (self, dpid, port_num, port_addr, discType):
+    """ Create LLDP packet """
 
     chassis_id = pkt.chassis_id(subtype=pkt.chassis_id.SUB_LOCAL)
     chassis_id.id = bytes('dpid:' + hex(long(dpid))[2:-1])
@@ -164,9 +164,14 @@ class LLDPSender (object):
     discovery_packet.tlvs.append(sysdesc)
     discovery_packet.tlvs.append(pkt.end_tlv())
 
-    eth = pkt.ethernet(type=pkt.ethernet.LLDP_TYPE)
+    eth = pkt.ethernet()
     eth.src = port_addr
-    eth.dst = pkt.ETHERNET.NDP_MULTICAST
+    if discType == "LLDP" :
+      eth.dst = pkt.ETHERNET.NDP_MULTICAST
+      eth.type = pkt.ethernet.LLDP_TYPE
+    if discType == "BDDP" :
+      eth.dst = pkt.ETHERNET.ETHER_BROADCAST
+      eth.type = pkt.ethernet.BDDP_TYPE
     eth.payload = discovery_packet
 
     po = of.ofp_packet_out(action = of.ofp_action_output(port=port_num))
@@ -272,8 +277,8 @@ class Discovery (EventMixin):
 
     packet = event.parsed
 
-    if (packet.effective_ethertype != pkt.ethernet.LLDP_TYPE
-        or packet.dst != pkt.ETHERNET.NDP_MULTICAST):
+    if ((packet.effective_ethertype != pkt.ethernet.LLDP_TYPE and packet.effective_ethertype != pkt.ethernet.BDDP_TYPE)
+        or (packet.dst != pkt.ETHERNET.NDP_MULTICAST and packet.dst != pkt.ETHERNET.ETHER_BROADCAST)):
       if not self._eat_early_packets: return
       if not event.connection.connect_time: return
       enable_time = time.time() - self.send_cycle_time - 1

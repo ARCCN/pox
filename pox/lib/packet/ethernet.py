@@ -52,6 +52,7 @@ class ethernet(packet_base):
   RARP_TYPE  = 0x8035
   VLAN_TYPE  = 0x8100
   LLDP_TYPE  = 0x88cc
+  BDDP_TYPE = 0x8999
   PAE_TYPE   = 0x888e           # 802.1x Port Access Entity
   MPLS_UNICAST_TYPE = 0x8847
   MPLS_MULTICAST_TYPE = 0x8848
@@ -85,6 +86,7 @@ class ethernet(packet_base):
       ethernet.type_parsers[ethernet.IP_TYPE]   = ipv4
       from lldp import lldp
       ethernet.type_parsers[ethernet.LLDP_TYPE] = lldp
+      ethernet.type_parsers[ethernet.BDDP_TYPE] = lldp
       from eapol import eapol
       ethernet.type_parsers[ethernet.PAE_TYPE]  = eapol
       from mpls import mpls
