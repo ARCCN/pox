@@ -163,6 +163,10 @@ def handle_STATS_REPLY (con, msg):
   e = con.ofnexus.raiseEventNoErrors(RawStatsReply, con, msg)
   if e is None or e.halt != True:
     con.raiseEventNoErrors(RawStatsReply, con, msg)
+  full_msg = (of.OFPT_STATS_REPLY, msg)
+  e = con.ofnexus.raiseEventNoErrors(OFMessage, con, full_msg)
+  if e is None or e.halt != True:
+    con.raiseEventNoErrors(OFMessage, con, full_msg)
   con._incoming_stats_reply(msg)
 
 def handle_PORT_STATUS (con, msg): #A
@@ -173,17 +177,29 @@ def handle_PORT_STATUS (con, msg): #A
   e = con.ofnexus.raiseEventNoErrors(PortStatus, con, msg)
   if e is None or e.halt != True:
     con.raiseEventNoErrors(PortStatus, con, msg)
+  full_msg = (of.OFPT_PORT_STATUS, msg)
+  e = con.ofnexus.raiseEventNoErrors(OFMessage, con, full_msg)
+  if e is None or e.halt != True:
+    con.raiseEventNoErrors(OFMessage, con, full_msg)
 
 def handle_PACKET_IN (con, msg): #A
   e = con.ofnexus.raiseEventNoErrors(PacketIn, con, msg)
   if e is None or e.halt != True:
     con.raiseEventNoErrors(PacketIn, con, msg)
+  full_msg = (of.OFPT_PACKET_IN, msg)
+  e = con.ofnexus.raiseEventNoErrors(OFMessage, con, full_msg)
+  if e is None or e.halt != True:
+    con.raiseEventNoErrors(OFMessage, con, full_msg)
 
 def handle_ERROR_MSG (con, msg): #A
   err = ErrorIn(con, msg)
   e = con.ofnexus.raiseEventNoErrors(err)
   if e is None or e.halt != True:
     con.raiseEventNoErrors(err)
+  full_msg = (of.OFPT_ERROR, msg)
+  e = con.ofnexus.raiseEventNoErrors(OFMessage, con, full_msg)
+  if e is None or e.halt != True:
+    con.raiseEventNoErrors(OFMessage, con, full_msg)
   if err.should_log:
     log.error(str(con) + " OpenFlow Error:\n" +
               msg.show(str(con) + " Error: ").strip())
@@ -192,6 +208,10 @@ def handle_BARRIER (con, msg):
   e = con.ofnexus.raiseEventNoErrors(BarrierIn, con, msg)
   if e is None or e.halt != True:
     con.raiseEventNoErrors(BarrierIn, con, msg)
+  full_msg = (of.OFPT_BARRIER_REPLY, msg)
+  e = con.ofnexus.raiseEventNoErrors(OFMessage, con, msg)
+  if e is None or e.halt != True:
+    con.raiseEventNoErrors(OFMessage, con, msg)
 
 # handlers for stats replies
 def handle_OFPST_DESC (con, parts):

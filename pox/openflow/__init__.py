@@ -153,6 +153,24 @@ class PortStatsReceived (StatsReply):
 class QueueStatsReceived (StatsReply):
   pass
 
+class OFMessage (Event):
+
+  def __init__ (self, connection, full_msg):
+    Event.__init__(self)
+    ofpt, msg = full_msg
+    self.ofpt = ofpt
+    if ofpt == of.OFPT_BARRIER_REPLY :
+      self.msg = BarrierIn(connection, msg)
+    elif ofpt == of.OFPT_ERROR :
+      self.msg = ErrorIn(connection, msg)
+    elif ofpt == of.OFPT_PACKET_IN :
+      self.msg = PacketIn(connection, msg)
+    elif ofpt == of.OFPT_STATS_REPLY :
+      self.msg = RawStatsReply(connection, msg)
+    elif ofpt == of.OFPT_FLOW_REMOVED :
+      self.msg = FlowRemoved(connection, msg)
+    #msg = handlerMap[ofpt](connection, msg)
+
 class PacketIn (Event):
   """
   Fired in response to PacketIn events
