@@ -1,0 +1,31 @@
+Applications for POX openflow controller. Written by ARCCN under GNU GPL license. 
+
+Simple Router and Load balancer poxscn1.py.
+
+You can run it under pox from pox directory:
+
+./pox.py poxscn1
+
+It contains some parameters:
+
+cl_net - list of clients networks. Only /24 mask supported
+lb_ip - ip address for balancer servers
+LAN_IP - list of ip addresses for for network gw
+LAN_MAC - mac address for routing
+
+You must designate ip addresses for clients from cl_networks with appropriate gateways from LAN_IP list. For all balanced servers designate lb_ip ip address with gw from LAN_IP.
+
+Application moves clients between servers when server links up and down.
+
+Simple ACL Virtual networks creator poxscn2.py
+
+You can run it under pox from pox directory:
+
+./pox.py poxscn2
+
+Application listens on HOST_NAME:PORT_NUMBER for json requests like:
+
+{"vid":"1","add":"1"}
+{"vid":"1","del":"2"}
+
+where vid means vlan id, "add"/"del" actions for written port numbers.
