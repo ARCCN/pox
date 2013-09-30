@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+
+<html>
+
+  <head>
+    <meta charset="utf-8" />
+    <title>YAC'2013 ARCCN</title>
+    <style>
+      @import 'arccn.css';
+    </style>
+  </head>
+
+  <body>
+    <div class="main w">
+      <div class="navbar">
+	<div class="head navbar-inner">
+	  <div class="pre-logo">
+	  </div>
+	  <div class="logo">
+	    <div class="around-img">
+	      <image src="cpiks_logo_eng.png"></image>
+	    </div>
+	  </div>
+	  <div class="apply-space">
+	    <div class="desc">
+	      <p>
+		Два порта коммутатора замкнуты одним проводом.
+        На этот цикл передаётся весь трафик между хостами.
+        Задай собственное число проходов от каждого отправителя
+        до каждого получателя и проверь его на traceroute!
+	      </p>
+	    </div>
+	  </div>
+	  <div class="apply post-logo">
+	    <div class="around-app btn" onclick="javascript:post()">
+	      <img src="apply.png" />
+	      <button class="apply-but apply"><img src="apply-text.png" /></button>
+	      <button class="apply-but done"><img src="done-text.png" /></button>
+	    </div>
+	  </div>
+	</div>
+      </div>
+      <div class="canvas"></div>
+    </div>
+
+    <script src="d3.v3.min.js"></script>
+    <script src="qrcode.min.js"></script>
+    <script src="prelude-browser-min.js"></script>
+    <script src="editme.js"></script>
+    <script src="post.js"></script>
+    <script src="bg.js"></script>
+    <script src="arc.js"></script>
+  </body>
+
+
+</html>
+

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js">
+    </script>
+    <title>title goes here</title>
+</head>
+<body>
+    <h1>Control</h1>
+    <script>
+
+        const HOSTS=3;
+
+        for (var i=1;i<1+HOSTS;i++) {
+            document.write('<div><h2>src host '+i+'</h2>');
+            for (var j=1;j<1+HOSTS;j++) {
+                if (i != j) {
+                    document.write(
+                        'dst host ' + j +
+                        '<br/>' +
+                        '<input type="text" value="3" id="field'+i+'a'+j+'"/>' +
+                        '<br/>'
+                    );
+                }
+            }
+            document.write('</div>');
+        }
+
+        function get_pair_map(){
+            var config = {};
+            for (var i=1;i<1+HOSTS;i++) {
+                for (var j=1;j<1+HOSTS;j++) {
+                    if (i != j) {
+                        config[[i,j]] = $('#field'+i+'a'+j).val();
+                    }
+                }
+            }
+            return config;
+        }
+
+        $(function(){
+            $("#submit").click(function(){
+                $.post("index.html",
+                        JSON.stringify({"pair_map": get_pair_map()}),
+                        function(data, status){
+                            var reply = JSON.parse(data);
+                            $("#msg").text(reply['status']);
+                            if (reply['result']) {
+                                $("#msg").css('color', 'green');
+                            } else {
+                                $("#msg").css('color', 'red');
+                            }
+                        }
+                );
+            });
+        });
+
+    </script>
+    <p id="msg">.</p>
+    <input type="submit" value="Submit" id="submit"/>
+</body>
+</html>

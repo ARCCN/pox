@@ -1,0 +1,33 @@
+DESCRIPTION
+
+Suppose the simplest topology with a cycle -- a single switch with two ports connected to each other.
+There are a number of hosts, connected through other ports. The switch is under your POX controller.
+
+How to get some fun with this topo?
+
+This application iterates all host traffic through the cycle for a given number of times.
+What is more, this number is configurable for each sender-receiver pair.
+
+INSTALLATION (for ubuntu users)
+
+Get POX controller:
+git clone https://github.com/noxrepo/pox
+
+Install Mininet emulator:
+sudo apt-get install mininet
+
+Clone the application code into {your POX installation}/ext:
+cd {your POX installation}/ext
+git clone {address of this this rep}
+
+
+USAGE
+
+Start the network in Mininet (needs superuser rights):
+sudo {your POX installation}/ext/yac/mn_config.py
+
+Start the application:
+cd {your POX installation}
+./pox.py yac.app
+
+Open http://localhost:8080 in your favourite browser.
